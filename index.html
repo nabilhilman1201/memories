@@ -367,32 +367,54 @@
 
   <button class="music-btn" onclick="toggleMusic()" id="music-control">🎵</button>
 
-  <script>
-    window.addEventListener('load', () => {
-      setTimeout(() => {
-        const loadingScreen = document.getElementById('loading-screen');
-        const mainContent = document.getElementById('main-content');
-        
-        loadingScreen.style.opacity = '0';
-        loadingScreen.style.visibility = 'hidden';
-        mainContent.style.opacity = '1';
+ <script>
+  window.addEventListener('load', () => {
+    // 1. Hilangkan loading screen setelah 3.5 detik
+    setTimeout(() => {
+      const loadingScreen = document.getElementById('loading-screen');
+      const mainContent = document.getElementById('main-content');
+      
+      loadingScreen.style.opacity = '0';
+      loadingScreen.style.visibility = 'hidden';
+      mainContent.style.opacity = '1';
 
-        const music = document.getElementById('bg-music');
-        music.play().catch(() => {});
-      }, 3500);
-    });
+      // Coba langsung jalankan musik saat loading selesai
+      startAudio();
+    }, 3500);
+  });
 
-    function toggleMusic() {
-      const music = document.getElementById('bg-music');
-      const btn = document.getElementById('music-control');
-      if (music.paused) {
+  const music = document.getElementById('bg-music');
+
+  function startAudio() {
+    music.play().then(() => {
+      // Jika browser mengizinkan autoplay, musik langsung menyala
+      document.getElementById('music-control').innerText = '🎵';
+    }).catch(() => {
+      // Jika browser memblokir, tunggu sentuhan/klik pertama pengguna di layar mana saja
+      const enableAutoplay = () => {
         music.play();
-        btn.innerText = '🎵';
-      } else {
-        music.pause();
-        btn.innerText = '🔇';
-      }
+        document.getElementById('music-control').innerText = '🎵';
+        // Hapus listener setelah musik berhasil berputar
+        document.removeEventListener('click', enableAutoplay);
+        document.removeEventListener('touchstart', enableAutoplay);
+      };
+
+      document.addEventListener('click', enableAutoplay);
+      document.addEventListener('touchstart', enableAutoplay);
+    });
+  }
+
+  // Fungsi tombol manual on/off
+  function toggleMusic() {
+    const btn = document.getElementById('music-control');
+    if (music.paused) {
+      music.play();
+      btn.innerText = '🎵';
+    } else {
+      music.pause();
+      btn.innerText = '🔇';
     }
-  </script>
+  }
+</script>
 </body>
 </html>
