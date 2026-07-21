@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Loading Memories - Waterfall Edition</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&family=Playfair+Display:ital,wght@1,600&display=swap" rel="stylesheet">
+  
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background-color: #050508;
+      color: #fff;
+      font-family: 'Poppins', sans-serif;
+      overflow: hidden;
+      height: 100vh;
+      width: 100vw;
+    }
+
+    /* --- LOADING SCREEN --- */
+    #loading-screen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: #08080c;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+      transition: opacity 1.2s ease, visibility 1.2s ease;
+    }
+
+    .heart-icon {
+      font-size: 55px;
+      color: #ff3366;
+      animation: pulse 1.2s infinite ease-in-out;
+      margin-bottom: 18px;
+      filter: drop-shadow(0 0 20px #ff3366);
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(1); opacity: 0.8; }
+      50% { transform: scale(1.3); opacity: 1; }
+      100% { transform: scale(1); opacity: 0.8; }
+    }
+
+    .loading-text {
+      font-size: 14px;
+      letter-spacing: 5px;
+      text-transform: uppercase;
+      color: #cccccc;
+      margin-bottom: 20px;
+      font-weight: 300;
+    }
+
+    .progress-bar {
+      width: 140px;
+      height: 3px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 3px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      width: 0%;
+      height: 100%;
+      background: linear-gradient(90deg, #ff3366, #ff6699);
+      box-shadow: 0 0 12px #ff3366;
+      animation: loadProgress 3.5s forwards ease-in-out;
+    }
+
+    @keyframes loadProgress {
+      0% { width: 0%; }
+      100% { width: 100%; }
+    }
+
+    /* --- MAIN WATERFALL CONTAINER --- */
+    #main-content {
+      opacity: 0;
+      transition: opacity 1.5s ease;
+      position: relative;
+      width: 100%;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    .waterfall-container {
+      display: flex;
+      justify-content: space-around;
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      top: 0;
+      left: 0;
+      padding: 0 10px;
+    }
+
+    .waterfall-column {
+      display: flex;
+      flex-direction: column;
+      gap: 100px;
+      width: 28%;
+      max-width: 180px;
+      position: absolute;
+      top: -120%;
+      animation: waterfallFlow linear infinite;
+    }
+
+    .col-1 {
+      left: 5%;
+      animation-duration: 40s;
+      animation-delay: 0s;
+    }
+
+    .col-2 {
+      left: 36%;
+      animation-duration: 32s;
+      animation-delay: -6s;
+    }
+
+    .col-3 {
+      right: 5%;
+      animation-duration: 50s;
+      animation-delay: -12s;
+    }
+
+    @keyframes waterfallFlow {
+      0% {
+        transform: translateY(0);
+      }
+      100% {
+        transform: translateY(220vh);
+      }
+    }
+
+    /* Waterfall Photo Cards */
+    .waterfall-card {
+      background: transparent;
+      border: none;
+      backdrop-filter: blur(10px);
+      padding: 10px;
+      border-radius: 14px;
+      box-shadow: none;
+      transition: transform 0.3s ease, border-color 0.3s ease;
+    }
+
+    .waterfall-card img {
+      width: 100%;
+      height: 140px;
+      object-fit: cover;
+      border-radius: 8px;
+      display: block;
+    }
+
+    .waterfall-card video {
+      width: 100%;
+      height: 140px;
+      object-fit: cover;
+      border-radius: 8px;
+      display: block;
+    }
+
+    /* --- FEAT: CAPTION MELAYANG LENGKAP & JELAS --- */
+    .falling-text {
+      position: absolute;
+      font-family: 'Playfair Display', serif;
+      font-style: italic;
+      font-size: 20px;
+      font-weight: 600;
+      white-space: nowrap;
+      pointer-events: none;
+      z-index: 10;
+      padding: 6px 14px;
+      background: rgba(5, 5, 8, 0.65); /* Latar belakang agar jelas terbaca */
+      border-radius: 20px;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(4px);
+      animation: textWaterfall linear infinite;
+    }
+
+    @keyframes textWaterfall {
+      0% {
+        transform: translateY(-10vh);
+        opacity: 0;
+        color: #ff3366;
+        filter: hue-rotate(0deg);
+        box-shadow: 0 0 10px rgba(255, 51, 102, 0.3);
+      }
+      10% {
+        opacity: 1;
+      }
+      50% {
+        filter: hue-rotate(180deg);
+        box-shadow: 0 0 15px rgba(51, 153, 255, 0.4);
+      }
+      90% {
+        opacity: 1;
+      }
+      100% {
+        transform: translateY(115vh);
+        opacity: 0;
+        filter: hue-rotate(360deg);
+        box-shadow: 0 0 10px rgba(255, 51, 102, 0.3);
+      }
+    }
+
+    /* Tombol Musik */
+    .music-btn {
+      position: fixed;
+      bottom: 25px;
+      right: 25px;
+      background: rgba(255, 51, 102, 0.85);
+      border: none;
+      color: #fff;
+      width: 45px;
+      height: 45px;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      box-shadow: 0 0 15px rgba(255, 51, 102, 0.6);
+      z-index: 100;
+      font-size: 18px;
+    }
+
+    .vignette {
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      pointer-events: none;
+      background: radial-gradient(circle, transparent 30%, rgba(5,5,8,0.85) 100%);
+      z-index: 50;
+    }
+
+    /* --- MEDIA QUERY HP --- */
+    @media (max-width: 600px) {
+      .col-3 {
+        display: none;
+      }
+
+      .waterfall-column {
+        width: 42%;
+        max-width: none;
+        gap: 100px;
+      }
+
+      .col-1 {
+        left: 5%;
+        animation-duration: 32s;
+      }
+
+      .col-2 {
+        left: 53%;
+        animation-duration: 30s;
+      }
+
+      .waterfall-card video,
+      .waterfall-card img {
+        height: 125px;
+      }
+
+      .falling-text {
+        font-size: 15px;
+        padding: 4px 10px;
+      }
+
+      .music-btn {
+        bottom: 20px;
+        right: 20px;
+        width: 40px;
+        height: 40px;
+        font-size: 16px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Loading Screen -->
+  <div id="loading-screen">
+    <div class="heart-icon">♥</div>
+    <div class="loading-text">Loading Memories</div>
+    <div class="progress-bar">
+      <div class="progress-fill"></div>
+    </div>
+  </div>
+
+  <div class="vignette"></div>
+
+  <!-- Main Waterfall Content -->
+  <div id="main-content">
+
+    <!-- Caption Melayang Jatuh (16 Caption) -->
+    <div class="falling-text" style="left: 3%; animation-duration: 14s; animation-delay: 1s;">you mean everything</div>
+    <div class="falling-text" style="left: 22%; animation-duration: 11s; animation-delay: 4s;">my safe place</div>
+    <div class="falling-text" style="left: 45%; animation-duration: 16s; animation-delay: 2s;">always on my mind</div>
+    <div class="falling-text" style="left: 65%; animation-duration: 13s; animation-delay: 5s;">only you ♥</div>
+    <div class="falling-text" style="left: 80%; animation-duration: 15s; animation-delay: 0s;">forever with you</div>
+    <div class="falling-text" style="left: 12%; animation-duration: 17s; animation-delay: 7s;">my favorite person</div>
+    <div class="falling-text" style="left: 52%; animation-duration: 12s; animation-delay: 8s;">stay with me</div>
+    <div class="falling-text" style="left: 32%; animation-duration: 18s; animation-delay: 3s;">my happiest place</div>
+    <div class="falling-text" style="left: 72%; animation-duration: 14s; animation-delay: 9s;">you make me smile</div>
+    <div class="falling-text" style="left: 2%; animation-duration: 16s; animation-delay: 10s;">endless love ♥</div>
+    <div class="falling-text" style="left: 38%; animation-duration: 13s; animation-delay: 11s;">so grateful for you</div>
+    <div class="falling-text" style="left: 58%; animation-duration: 15s; animation-delay: 6s;">you are my home</div>
+    <div class="falling-text" style="left: 78%; animation-duration: 12s; animation-delay: 12s;">my sun and stars</div>
+    <div class="falling-text" style="left: 18%; animation-duration: 19s; animation-delay: 13s;">precious memories</div>
+    <div class="falling-text" style="left: 48%; animation-duration: 14s; animation-delay: 14s;">better together</div>
+    <div class="falling-text" style="left: 85%; animation-duration: 16s; animation-delay: 15s;">love you more ♥</div>
+
+    <!-- Kolom Foto Air Terjun -->
+    <div class="waterfall-container">
+
+      <!-- Kolom 1 -->
+      <div class="waterfall-column col-1">
+        <div class="waterfall-card">
+          <img src="foto4.jpeg" alt="Memory 1">
+        </div>
+        <div class="waterfall-card">
+          <img src="foto5.jpeg" alt="Memory 2">
+        </div>
+        <div class="waterfall-card">
+          <img src="foto2.jpeg" alt="Memory 3">
+        </div>
+      </div>
+
+      <!-- Kolom 2 -->
+      <div class="waterfall-column col-2">
+        <div class="waterfall-card">
+          <video autoplay loop muted playsinline>
+            <source src="video2.mp4" type="video/mp4">
+          </video>
+        </div>
+        <div class="waterfall-card">
+          <img src="foto9.jpeg" alt="Memory 4">
+        </div>
+        <div class="waterfall-card">
+          <img src="foto8.jpeg" alt="Memory 5">
+        </div>
+      </div>
+
+      <!-- Kolom 3 -->
+      <div class="waterfall-column col-3">
+        <div class="waterfall-card">
+          <img src="foto7.jpeg" alt="Memory 7">
+        </div>
+        <div class="waterfall-card">
+          <img src="foto8.jpeg" alt="Memory 6">
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Audio Musik Background -->
+  <audio id="bg-music" loop>
+    <source src="kattypary.mp3#t=4" type="audio/mpeg">
+  </audio>
+
+  <button class="music-btn" onclick="toggleMusic()" id="music-control">🎵</button>
+
+  <script>
+    window.addEventListener('load', () => {
+      setTimeout(() => {
+        const loadingScreen = document.getElementById('loading-screen');
+        const mainContent = document.getElementById('main-content');
+        
+        loadingScreen.style.opacity = '0';
+        loadingScreen.style.visibility = 'hidden';
+        mainContent.style.opacity = '1';
+
+        const music = document.getElementById('bg-music');
+        music.play().catch(() => {});
+      }, 3500);
+    });
+
+    function toggleMusic() {
+      const music = document.getElementById('bg-music');
+      const btn = document.getElementById('music-control');
+      if (music.paused) {
+        music.play();
+        btn.innerText = '🎵';
+      } else {
+        music.pause();
+        btn.innerText = '🔇';
+      }
+    }
+  </script>
+</body>
+</html>
