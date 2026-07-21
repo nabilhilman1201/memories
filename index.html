@@ -368,8 +368,39 @@
   <button class="music-btn" onclick="toggleMusic()" id="music-control">🎵</button>
 
  <script>
+  const music = document.getElementById('bg-music');
+  const btn = document.getElementById('music-control');
+
+  // Fungsi untuk memutar musik
+  function playAudio() {
+    // Set waktu mulai jika diperlukan (opsional, karena di HTML sudah ada #t=4)
+    if (music.currentTime === 0) {
+      music.currentTime = 4;
+    }
+
+    music.play().then(() => {
+      btn.innerText = '🎵';
+      // Hapus event listener begitu lagu berhasil terputar
+      removeTouchListeners();
+    }).catch((err) => {
+      console.log("Autoplay diblokir, menunggu interaksi pengguna.");
+    });
+  }
+
+  // Fungsi untuk menghapus pemantau sentuhan setelah musik berhasil main
+  function removeTouchListeners() {
+    document.removeEventListener('touchstart', playAudio);
+    document.removeEventListener('touchend', playAudio);
+    document.removeEventListener('click', playAudio);
+  }
+
+  // Pasang pemantau sentuhan/klik di seluruh layar HP & PC sejak awal
+  document.addEventListener('touchstart', playAudio, { once: true });
+  document.addEventListener('touchend', playAudio, { once: true });
+  document.addEventListener('click', playAudio, { once: true });
+
+  // Jalankan saat halaman selesai dimuat (Loading Screen)
   window.addEventListener('load', () => {
-    // 1. Hilangkan loading screen setelah 3.5 detik
     setTimeout(() => {
       const loadingScreen = document.getElementById('loading-screen');
       const mainContent = document.getElementById('main-content');
@@ -378,35 +409,13 @@
       loadingScreen.style.visibility = 'hidden';
       mainContent.style.opacity = '1';
 
-      // Coba langsung jalankan musik saat loading selesai
-      startAudio();
+      // Coba putar otomatis saat loading selesai jika browser mengizinkan
+      playAudio();
     }, 3500);
   });
 
-  const music = document.getElementById('bg-music');
-
-  function startAudio() {
-    music.play().then(() => {
-      // Jika browser mengizinkan autoplay, musik langsung menyala
-      document.getElementById('music-control').innerText = '🎵';
-    }).catch(() => {
-      // Jika browser memblokir, tunggu sentuhan/klik pertama pengguna di layar mana saja
-      const enableAutoplay = () => {
-        music.play();
-        document.getElementById('music-control').innerText = '🎵';
-        // Hapus listener setelah musik berhasil berputar
-        document.removeEventListener('click', enableAutoplay);
-        document.removeEventListener('touchstart', enableAutoplay);
-      };
-
-      document.addEventListener('click', enableAutoplay);
-      document.addEventListener('touchstart', enableAutoplay);
-    });
-  }
-
-  // Fungsi tombol manual on/off
+  // Fungsi tombol manual (on/off)
   function toggleMusic() {
-    const btn = document.getElementById('music-control');
     if (music.paused) {
       music.play();
       btn.innerText = '🎵';
